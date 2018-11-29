@@ -34,7 +34,7 @@ class Challenge:
         while True:
             is_finished = self.get_game_info()
             if is_finished:
-                print("Challenge complete!")
+                print("Completed all levels. Challenge complete!")
                 return
 
             # set up maze matrix
@@ -50,10 +50,10 @@ class Challenge:
 
         # check status
         if self.game['status'] == 'NONE':
-            print("Status is NONE, aka session has expired or does not exist")
+            print("Status is NONE, i.e. session has expired or does not exist")
             sys.exit(1)
         elif self.game['status'] == 'GAME_OVER':
-            print("Status is GAME_OVER, aka we lost :(")
+            print("Status is GAME_OVER, i.e. we lost :(")
             sys.exit(1)
         elif self.game['status'] == 'FINISHED':
             return True
