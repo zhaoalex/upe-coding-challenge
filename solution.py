@@ -3,6 +3,7 @@ import requests
 import sys
 
 url = 'http://ec2-34-216-8-43.us-west-2.compute.amazonaws.com'
+# stores the offset values for moving in a given direction
 direcs = {
     'UP': (0, -1),
     'LEFT': (-1, 0),
@@ -19,14 +20,12 @@ backtrack = {
 token_param = {}
 game = {}
 
-# start the challenge
 def start_challenge():
     global token_param
 
     # get our token
     form_data = {'uid': '904907409'}
     token_param = requests.post(url + '/session', data=form_data).json()
-
     print("Obtained token: {}".format(token_param['token']))
 
     # begin playing games and NEVER STOP until we finish
@@ -64,11 +63,8 @@ def update_game_info():
     return False
 
 # our matrix will be: False for unvisited, True for visited (or wall)
-# note: format will be maze[y][x] because that's the internal format
+# note: format will be maze[y][x] because that's the given format
 def play_level(maze, x, y):
-    # print("({0}, {1}): {2}".format(x, y, maze[y][x]))
-    # update_game_info() # wastes a lot of time on needless network calls: for debugging only
-    
     # try to move in every direction
     for direction, offset in direcs.items():
         newX = x + offset[0]
@@ -76,15 +72,14 @@ def play_level(maze, x, y):
         # only move to new loc if it's valid
         if is_valid(maze, newX, newY):
             result = move(direction)
-            # we shouldn't have an OUT_OF_BOUNDS case here
-            # but even if we do, it keeps us in the same location so we should be good
+            # we shouldn't have an OUT_OF_BOUNDS case here since we checked validity
             if result == 'END':
                 return True
             elif result == 'WALL':
-                maze[newY][newX] = True # a wall is marked as True as well!
+                maze[newY][newX] = True # a wall is marked as True as well
             elif result == 'SUCCESS':
                 maze[newY][newX] = True
-                # try and keep going; if we returned True at any point, we already solved the maze!
+                # try and keep going; if we returned True at any point, we solved the maze!
                 if play_level(maze, newX, newY):
                     return True
                 # otherwise, we backtrack
